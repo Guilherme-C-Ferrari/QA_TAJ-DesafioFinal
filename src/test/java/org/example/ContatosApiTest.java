@@ -47,12 +47,30 @@ public class ContatosApiTest {
 
     @Test
     public void postContact_shouldAddNewContactSuccessfully() {
+        Contato c = new Contato("João Silva", "(11) 91234-5678", "joao.silva@example.com", "12345678901");
 
+        given()
+            .contentType("application/json")
+            .body(c)
+        .when()
+            .post("/contatos")
+        .then()
+            .body("nome", equalTo("João Silva"))
+            .body("email", equalTo("joao.silva@example.com"))
+            .body("cpf", equalTo("12345678901"));
     }
 
     @Test
     public void postContact_shouldReturn201_whenContactIsCreated() {
+        Contato c = new Contato("Carlos Silva", "(11) 91234-5678", "carlos.silva@example.com", "0987654321");
 
+        given()
+            .contentType("application/json")
+            .body(c)
+        .when()
+            .post("/contatos")
+        .then()
+            .statusCode(201);
     }
 
     @Test
