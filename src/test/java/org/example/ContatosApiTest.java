@@ -79,6 +79,13 @@ public class ContatosApiTest {
     @DisplayName("POST /contatos deve falhar caso já hajam 30 contatos e retornar 400 Bad Request")
     @Test
     public void postContact_shouldFail_when30ContactsExist() {
+
+        given()
+        .when()
+            .delete("/contatos")
+        .then()
+            .statusCode(204);
+
         for (int i = 1; i <= 30; i++) {
             Contato c = new Contato(
                     "C" + i,
@@ -112,21 +119,40 @@ public class ContatosApiTest {
             .statusCode(400);
     }
 
+    @DisplayName("DELETE /contatos deve limpar todos os contatos")
     @Test
     public void deleteContacts_shouldClearAllContacts() {
-
+        given()
+        .when()
+            .delete("/contatos")
+        .then()
+            .statusCode(204);
     }
 
+    @DisplayName("GET /contatos deve retornar lista vazia após DELETE /contatos limpar todos os contatos")
     @Test
-    public void deleteContacts_shouldReturnEmptyListAfterDelete_whenGettingAllContacts() {
+    public void getContatos_shouldReturnEmptyListAfterDelete_whenGettingAllContacts() {
+        given()
+            .when()
+        .delete("/contatos")
+            .then()
+        .statusCode(204); // depende da API
 
+        given()
+            .when()
+        .get("/contatos")
+            .then()
+        .statusCode(200)
+            .body("", hasSize(0));
     }
 
+    @DisplayName("GET /contato/:cpf deve retornar contato específico por CPF")
     @Test
     public void getContact_shouldReturnCorrectContact_whenUsingCpf() {
 
     }
 
+    @DisplayName("GET /contato/:cpf deve retornar 404 Not Found quando o contato não for encontrado")
     @Test
     public void getContact_shouldReturn404_whenContactNotFound() {
 
