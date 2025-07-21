@@ -131,7 +131,7 @@ public class ContatosApiTest {
 
     @DisplayName("GET /contatos deve retornar lista vazia após DELETE /contatos limpar todos os contatos")
     @Test
-    public void getContatos_shouldReturnEmptyListAfterDelete_whenGettingAllContacts() {
+    public void getContact_shouldReturnEmptyListAfterDelete_whenGettingAllContacts() {
         given()
             .when()
         .delete("/contatos")
