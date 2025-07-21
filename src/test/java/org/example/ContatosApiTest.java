@@ -35,6 +35,7 @@ public class ContatosApiTest {
             .body("", isA(List.class));
     }
 
+    @DisplayName("GET /contatos deve retornar uma lista vazia se nenhum contato existir")
     @Test
     public void getContacts_shouldReturnEmptyList_whenNoContactsExist() {
         given()
@@ -45,6 +46,7 @@ public class ContatosApiTest {
             .body("", hasSize(0));
     }
 
+    @DisplayName("POST /contatos deve adicionar um contato novo com sucesso")
     @Test
     public void postContact_shouldAddNewContactSuccessfully() {
         Contato c = new Contato("João Silva", "(11) 91234-5678", "joao.silva@example.com", "12345678901");
@@ -60,6 +62,7 @@ public class ContatosApiTest {
             .body("cpf", equalTo("12345678901"));
     }
 
+    @DisplayName("POST /contatos retornar 201 Created")
     @Test
     public void postContact_shouldReturn201_whenContactIsCreated() {
         Contato c = new Contato("Carlos Silva", "(11) 91234-5678", "carlos.silva@example.com", "0987654321");
@@ -73,9 +76,40 @@ public class ContatosApiTest {
             .statusCode(201);
     }
 
+    @DisplayName("POST /contatos deve falhar caso já hajam 30 contatos e retornar 400 Bad Request")
     @Test
     public void postContact_shouldFail_when30ContactsExist() {
+        for (int i = 1; i <= 30; i++) {
+            Contato c = new Contato(
+                    "C" + i,
+                    "(11) 9000-000" + i,
+                    "C" + i + "@example.com",
+                    String.format("%011d", 10000000000L + i)
+            );
 
+            given()
+                .contentType("application/json")
+                .body(c)
+            .when()
+                .post("/contatos")
+            .then()
+                .statusCode(201);
+        }
+
+        Contato c = new Contato(
+                "C31",
+                "(11) 9000-0031",
+                "C31@example.com",
+                String.format("%011d", 10000000000L + 31)
+        );
+
+        given()
+            .contentType("application/json")
+            .body(c)
+        .when()
+            .post("/contatos")
+        .then()
+            .statusCode(400);
     }
 
     @Test
