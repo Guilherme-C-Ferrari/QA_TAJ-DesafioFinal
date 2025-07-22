@@ -15,6 +15,11 @@ public class ContatosApiTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
+    @BeforeEach
+    private void clearBeforeEachTest() {
+        clearContacts();
+    }
+
     @DisplayName("GET /contatos deve retornar 200 OK")
     @Test
     public void getContacts_shouldReturn200() {
@@ -79,13 +84,6 @@ public class ContatosApiTest {
     @DisplayName("POST /contatos deve falhar caso já hajam 30 contatos e retornar 400 Bad Request")
     @Test
     public void postContact_shouldFail_when30ContactsExist() {
-
-        given()
-            .when()
-                .delete("/contatos")
-            .then()
-                .statusCode(204);
-
         for (int i = 1; i <= 30; i++) {
             Contato c = new Contato(
                     "C" + i,
@@ -139,6 +137,16 @@ public class ContatosApiTest {
     @DisplayName("GET /contato/:cpf deve retornar contato específico por CPF")
     @Test
     public void getContact_shouldReturnCorrectContact_whenUsingCpf() {
+        Contato c = new Contato("João Silva", "(11) 91234-5678", "joao.silva@example.com", "12345678901");
+
+        given()
+                .contentType("application/json")
+                .body(c)
+            .when()
+                .post("/contatos")
+            .then()
+                .statusCode(201);
+
         given()
                 .pathParam("cpf", "12345678901")
             .when()
@@ -156,5 +164,13 @@ public class ContatosApiTest {
                 .get("/contatos/{cpf}")
             .then()
                 .statusCode(404);
+    }
+
+    private static void clearContacts() {
+        given()
+            .when()
+                .delete("/contatos")
+            .then()
+                .statusCode(204);
     }
 }
