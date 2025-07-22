@@ -19,31 +19,31 @@ public class ContatosApiTest {
     @Test
     public void getContacts_shouldReturn200() {
         given()
-        .when()
-            .get("/contatos")
-        .then()
-            .statusCode(200);
+            .when()
+                .get("/contatos")
+            .then()
+                .statusCode(200);
     }
 
     @DisplayName("GET /contatos deve retornar um JsonArray")
     @Test
     public void getContacts_shouldReturnJsonArray_whenCalled() {
         given()
-        .when()
-            .get("/contatos")
-        .then()
-            .body("", isA(List.class));
+            .when()
+                .get("/contatos")
+            .then()
+                .body("", isA(List.class));
     }
 
     @DisplayName("GET /contatos deve retornar uma lista vazia se nenhum contato existir")
     @Test
     public void getContacts_shouldReturnEmptyList_whenNoContactsExist() {
         given()
-        .when()
-            .get("/contatos")
-        .then()
-            .statusCode(200)
-            .body("", hasSize(0));
+            .when()
+                .get("/contatos")
+            .then()
+                .statusCode(200)
+                .body("", hasSize(0));
     }
 
     @DisplayName("POST /contatos deve adicionar um contato novo com sucesso")
@@ -52,28 +52,28 @@ public class ContatosApiTest {
         Contato c = new Contato("João Silva", "(11) 91234-5678", "joao.silva@example.com", "12345678901");
 
         given()
-            .contentType("application/json")
-            .body(c)
-        .when()
-            .post("/contatos")
-        .then()
-            .body("nome", equalTo("João Silva"))
-            .body("email", equalTo("joao.silva@example.com"))
-            .body("cpf", equalTo("12345678901"));
+                .contentType("application/json")
+                .body(c)
+            .when()
+                .post("/contatos")
+            .then()
+                .body("nome", equalTo("João Silva"))
+                .body("email", equalTo("joao.silva@example.com"))
+                .body("cpf", equalTo("12345678901"));
     }
 
     @DisplayName("POST /contatos retornar 201 Created")
     @Test
     public void postContact_shouldReturn201_whenContactIsCreated() {
-        Contato c = new Contato("Carlos Silva", "(11) 91234-5678", "carlos.silva@example.com", "0987654321");
+        Contato c = new Contato("Carlos Silva", "(11) 91234-5678", "carlos.silva@example.com", "09876543210");
 
         given()
-            .contentType("application/json")
-            .body(c)
-        .when()
-            .post("/contatos")
-        .then()
-            .statusCode(201);
+                .contentType("application/json")
+                .body(c)
+            .when()
+                .post("/contatos")
+            .then()
+                .statusCode(201);
     }
 
     @DisplayName("POST /contatos deve falhar caso já hajam 30 contatos e retornar 400 Bad Request")
@@ -81,10 +81,10 @@ public class ContatosApiTest {
     public void postContact_shouldFail_when30ContactsExist() {
 
         given()
-        .when()
-            .delete("/contatos")
-        .then()
-            .statusCode(204);
+            .when()
+                .delete("/contatos")
+            .then()
+                .statusCode(204);
 
         for (int i = 1; i <= 30; i++) {
             Contato c = new Contato(
@@ -95,12 +95,12 @@ public class ContatosApiTest {
             );
 
             given()
-                .contentType("application/json")
-                .body(c)
-            .when()
-                .post("/contatos")
-            .then()
-                .statusCode(201);
+                    .contentType("application/json")
+                    .body(c)
+                .when()
+                    .post("/contatos")
+                .then()
+                    .statusCode(201);
         }
 
         Contato c = new Contato(
@@ -111,50 +111,50 @@ public class ContatosApiTest {
         );
 
         given()
-            .contentType("application/json")
-            .body(c)
-        .when()
-            .post("/contatos")
-        .then()
-            .statusCode(400);
+                .contentType("application/json")
+                .body(c)
+            .when()
+                .post("/contatos")
+            .then()
+                .statusCode(400);
     }
 
-    @DisplayName("DELETE /contatos deve limpar todos os contatos")
+    @DisplayName("DELETE /contatos deve limpar todos os contatos fazendo com que GET /contatos retorne uma lista vazia")
     @Test
     public void deleteContacts_shouldClearAllContacts() {
         given()
-        .when()
-            .delete("/contatos")
-        .then()
-            .statusCode(204);
-    }
-
-    @DisplayName("GET /contatos deve retornar lista vazia após DELETE /contatos limpar todos os contatos")
-    @Test
-    public void getContact_shouldReturnEmptyListAfterDelete_whenGettingAllContacts() {
-        given()
             .when()
-        .delete("/contatos")
+                .delete("/contatos")
             .then()
-        .statusCode(204); // depende da API
+                .statusCode(204);
 
         given()
             .when()
-        .get("/contatos")
+                .get("/contatos")
             .then()
-        .statusCode(200)
-            .body("", hasSize(0));
+                .statusCode(200)
+                .body("", hasSize(0));
     }
 
     @DisplayName("GET /contato/:cpf deve retornar contato específico por CPF")
     @Test
     public void getContact_shouldReturnCorrectContact_whenUsingCpf() {
-
+        given()
+                .pathParam("cpf", "12345678901")
+            .when()
+                .get("/contatos/{cpf}")
+            .then()
+                .body("cpf", equalTo("12345678901"));
     }
 
     @DisplayName("GET /contato/:cpf deve retornar 404 Not Found quando o contato não for encontrado")
     @Test
     public void getContact_shouldReturn404_whenContactNotFound() {
-
+        given()
+                .pathParam("cpf", "00000000000")
+            .when()
+                .get("/contatos/{cpf}")
+            .then()
+                .statusCode(404);
     }
 }
